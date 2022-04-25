@@ -1,14 +1,36 @@
-import React from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
+import { enterRoom } from "../features/appSlice";
+import { db } from "../firebase/config";
+import { collection, addDoc } from "firebase/firestore";
 
-const SidebarOption = ({ Icon, title, addChannelOption }) => {
+const SidebarOption = ({ Icon, title, addChannelOption, id }) => {
+  const dispatch = useDispatch()
+  const addChannel = async () => {
+    const channelName = prompt("Please enter the enter name");
+    if (channelName) {
+      try {
+        await addDoc(collection(db, 'rooms'),{
+          name: channelName,
+        });
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  };
 
-  const addChannel=()=>{
-
-  }
+  const seclectChannel = () => {
+    if(id) {
+      dispatch(enterRoom({
+        roomId: id
+      }))
+    }
+  };
 
   return (
-    <SidebarOptionContainer>
+    <SidebarOptionContainer
+      onClick={addChannelOption ? addChannel : seclectChannel}
+    >
       {Icon && <Icon fontSize="small" style={{ padding: 10 }} />}
       {Icon ? (
         <h3>{title}</h3>
@@ -33,7 +55,7 @@ const SidebarOptionContainer = styled.a`
 
   :hover {
     opacity: 0.8;
-    background-color: #340e36
+    background-color: #340e36;
   }
 
   > h3 {
@@ -45,4 +67,7 @@ const SidebarOptionContainer = styled.a`
   }
 `;
 
-const SidebarOptionChannel = styled.div``;
+const SidebarOptionChannel = styled.h3`
+  padding: 10px 0;
+  font-weight: 300;
+`;
