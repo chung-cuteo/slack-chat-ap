@@ -1,14 +1,15 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
+require('dotenv').config()
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA3pQE85mmocoEtFmByJQor4CIkWIlmpJs",
-  authDomain: "slack-app-fake.firebaseapp.com",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
   projectId: "slack-app-fake",
   storageBucket: "slack-app-fake.appspot.com",
   messagingSenderId: "832917131621",
-  appId: "1:832917131621:web:8dbfe54747113304bc518c",
+  appId: process.env.FIREBASE_APP_ID,
   measurementId: "G-0LVL01Z9WH",
 };
 
