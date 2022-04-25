@@ -1,6 +1,4 @@
 import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
 require('dotenv').config()
 
 const firebaseConfig = {
@@ -14,15 +12,15 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+const firebaseApp = firebase.initializeApp(firebaseConfig);
 
+const db = firebaseApp.firestore();
 const auth = firebase.auth();
-const db = firebase.firestore();
+const provider = new firebase.auth.GoogleAuthProvider();
 
 if (window.location.hostname === "localhost") {
   // auth.useEmulator('http://localhost:9099');
   // db.useEmulator('localhost', '8080');
 }
 
-export { db, auth };
-export default firebase;
+export { db, auth, provider };
