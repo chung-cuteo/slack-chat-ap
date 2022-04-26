@@ -18,9 +18,7 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { db } from "../firebase/config";
 
 const Sidebar = () => {
-  const [channels] = useCollection(collection(db, "rooms"), {
-    snapshotListenOptions: { includeMetadataChanges: true },
-  });
+  const [channels] = useCollection(collection(db, "rooms"));
 
   return (
     <SidebarContainer>
@@ -67,6 +65,8 @@ const SidebarContainer = styled.div`
   flex: 0.3;
   margin-top: 60px;
   max-width: 260px;
+  max-height: 100%;
+  overflow: auto;
   border-top: 1px solid #49274b;
 
   > hr {

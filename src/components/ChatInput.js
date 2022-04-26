@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { Button } from "@mui/material";
 
 const ChatInput = ({ channelName, channelId }) => {
   const [message, setMessage] = useState("");
@@ -23,7 +24,6 @@ const ChatInput = ({ channelName, channelId }) => {
     } catch (e) {
       console.log(e);
     }
-
     setMessage("");
   };
 
@@ -31,15 +31,13 @@ const ChatInput = ({ channelName, channelId }) => {
     <ChatInputContainer>
       <form>
         <input
-          vale={message}
-          onChange={(e) => {
-            setMessage(e.target.value);
-          }}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder={`Message #ROOM`}
         />
-        <button hidden type="submit" onClick={sendMessage}>
+        <Button hidden type="submit" onClick={sendMessage}>
           SEND
-        </button>
+        </Button>
       </form>
     </ChatInputContainer>
   );

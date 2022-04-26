@@ -3,6 +3,7 @@ import "./App.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Chat from "./components/Chat";
+import CreateChannelModal from "./components/CreateChannelModal";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Sidebar />
         <Chat />
       </AppBody>
+      <CreateChannelModal/>
     </div>
   );
 }
