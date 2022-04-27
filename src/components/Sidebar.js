@@ -1,5 +1,4 @@
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import React from "react";
 import styled from "styled-components";
 import CreateIcon from "@mui/icons-material/Create";
 import SidebarOption from "./SidebarOption";
@@ -13,9 +12,9 @@ import FileCopyIcon from "@mui/icons-material/FileCopy";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {collection } from "firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { db } from "../firebase/config";
+import { collection } from "firebase/firestore";
 
 const Sidebar = () => {
   const [channels] = useCollection(collection(db, "rooms"));
@@ -47,11 +46,7 @@ const Sidebar = () => {
       <SidebarOption Icon={AddIcon} addChannelOption title="Add channel" />
 
       {channels?.docs.map((doc) => (
-        <SidebarOption
-          key={doc.id}
-          id={doc.id}
-          title={doc.data().name}
-        />
+        <SidebarOption key={doc.id} id={doc.id} title={doc.data().name} />
       ))}
     </SidebarContainer>
   );

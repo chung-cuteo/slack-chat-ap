@@ -1,30 +1,15 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { enterRoom } from "../features/appSlice";
-import { db } from "../firebase/config";
-import { collection, addDoc } from "firebase/firestore";
-import { openModal, modalState } from "../features/modalSlice";
+import { openModal } from "../features/modalSlice";
 
 const SidebarOption = ({ Icon, title, addChannelOption, id }) => {
   const dispatch = useDispatch();
-  const channelData = useSelector(modalState);
-
-  const addChannel = async () => {
+  const handleAddChannel = async () => {
     dispatch(openModal(true));
-
-    if (channelData.channel.name && channelData.channel.desc) {
-      try {
-        await addDoc(collection(db, "rooms"), {
-          name: channelData.channel.name,
-          desc: channelData.channel.desc,
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
   };
 
-  const seclectChannel = () => {
+  const handleSeclectChannel = () => {
     if (id) {
       dispatch(
         enterRoom({
@@ -36,7 +21,7 @@ const SidebarOption = ({ Icon, title, addChannelOption, id }) => {
 
   return (
     <SidebarOptionContainer
-      onClick={addChannelOption ? addChannel : seclectChannel}
+      onClick={addChannelOption ? handleAddChannel : handleSeclectChannel }
     >
       {Icon && <Icon fontSize="small" style={{ padding: 10 }} />}
       {Icon ? (

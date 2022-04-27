@@ -6,13 +6,16 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useDispatch, useSelector } from "react-redux";
-import { addChannel, openModal } from "../features/modalSlice";
+import { openModal } from "../features/modalSlice";
 import { modalState } from "../features/modalSlice";
 import { useState } from "react";
+import { db } from "../firebase/config";
+import { collection, addDoc } from "firebase/firestore";
 
 const CreateChannelModal = () => {
   const modalStates = useSelector(modalState);
   const dispatch = useDispatch();
+
   const [channel, setChannel] = useState({
     name: "",
     desc: "",
@@ -26,8 +29,15 @@ const CreateChannelModal = () => {
     setChannel({ ...channel, [e.target.id]: e.target.value });
   };
 
-  const handleAddIput = () => {
-    dispatch(addChannel({ channel }));
+  const handleAddIput = async () => {
+    try {
+      await addDoc(collection(db, "rooms"), {
+        name: channel.name,
+        desc: channel.desc,
+      })
+    } catch (error) {
+      console.log(error);
+    }
     setChannel({
       name: "",
       desc: "",
