@@ -9,7 +9,7 @@ import { auth } from "./firebase/config";
 import Login from "./components/Login";
 
 function App() {
-  const [user, loading] = useAuthState(auth);
+  const [user] = useAuthState(auth);
   return (
     <div className="App">
       {!user ? (
