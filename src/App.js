@@ -1,36 +1,32 @@
-import styled from "styled-components";
 import "./App.css";
-import Header from "./components/Header";
-import Sidebar from "./components/Sidebar";
-import Chat from "./components/Chat";
-import CreateChannelModal from "./components/CreateChannelModal";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase/config";
-import Login from "./components/Login";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
 
-function App() {
+function ProtectedRoute({ component: Component, ...rest }) {
   const [user] = useAuthState(auth);
   return (
+    <Route
+      {...rest}
+      render={(props) =>
+        user ? <Component {...props} /> : <Navigate to="/Login" />
+      }
+    />
+  );
+}
+
+function App() {
+
+  return (
     <div className="App">
-      {!user ? (
-        <Login />
-      ) : (
-        <>
-          <Header />
-          <AppBody>
-            <Sidebar />
-            <Chat />
-          </AppBody>
-          <CreateChannelModal />
-        </>
-      )}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/Login" element={<Login />} />
+      </Routes>
     </div>
   );
 }
 
 export default App;
-
-const AppBody = styled.div`
-  display: flex;
-  height: 100vh;
-`;
