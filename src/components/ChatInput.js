@@ -1,11 +1,16 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useState,  useContext } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { Button } from "@mui/material";
+import { AuthContext } from '../Context/AuthProvider';
 
 const ChatInput = ({ channelName, channelId, chatRef }) => {
+  const {
+    user: { uid, photoURL, displayName },
+  } = useContext(AuthContext);
   const [message, setMessage] = useState("");
+
   const sendMessage = async (e) => {
     e.preventDefault();
 
@@ -14,12 +19,13 @@ const ChatInput = ({ channelName, channelId, chatRef }) => {
     }
 
     try {
-      await addDoc(collection(db, "rooms", channelId, "messages"), {
+      await addDoc(collection(db, "messages"), {
         message: message,
-        timestamp: serverTimestamp(),
-        user: "chung",
-        userImage:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4tiZfmRmstIZzpPNS-1KlSkyfDD2rMbbMiw&usqp=CAU",
+        uid,
+        roomId: channelId,
+        user: displayName,
+        userImage:photoURL,
+        createdAt: serverTimestamp(),
       });
     } catch (e) {
       console.log(e);

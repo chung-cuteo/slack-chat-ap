@@ -1,23 +1,41 @@
-import React from "react";
+import { useContext } from "react";
 import styled from "styled-components";
 import { Avatar } from "@mui/material";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SearchIcon from "@mui/icons-material/Search";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import LogoutIcon from "@mui/icons-material/Logout";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import IconButton from "@mui/material/IconButton";
+import { auth } from "../firebase/config";
+import { signOut } from "firebase/auth";
+import { AuthContext } from "../Context/AuthProvider";
 
 const Header = () => {
+  const { user } = useContext(AuthContext);
+  
+  const handleLogOut = (e) => {
+    e.preventDefault();
+    signOut(auth);
+  };
+
   return (
     <HeaderContainer>
       <HeaderLeft>
-        <HeaderAvatar />
-        <AccessTimeIcon />
+        <HeaderAvatarContainer>
+          <HeaderAvatar alt={user?.displayName} src={user?.photoURL}>
+            {user?.photoURL ? "" : user?.displayName?.charAt(0)?.toUpperCase()}
+          </HeaderAvatar>
+          <FiberManualRecordIcon className={user?.isOnline ? "online" : null} />
+        </HeaderAvatarContainer>
+        <h2>{user?.displayName}</h2>
       </HeaderLeft>
       <HeaderSearch>
         <SearchIcon />
         <input placeholder="search..." />
       </HeaderSearch>
       <HeaderRight>
-        <HelpOutlineIcon />
+        <IconButton aria-label="logout" onClick={handleLogOut}>
+          <LogoutIcon />
+        </IconButton>
       </HeaderRight>
     </HeaderContainer>
   );
@@ -32,8 +50,7 @@ const HeaderContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 10px 0;
-  background-color: var(--slack-color);
-  color: white;
+  background-color: #3f0f40;
 `;
 
 const HeaderLeft = styled.div`
@@ -42,9 +59,29 @@ const HeaderLeft = styled.div`
   align-items: center;
   margin-left: 20px;
 
+  h2 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-left: 20px;
+  }
+`;
+
+const HeaderAvatarContainer = styled.div`
+  position: relative;
+
+  > .MuiAvatar-root {
+    display: flex;
+  }
+
   > .MuiSvgIcon-root {
-    margin-left: auto;
-    margin-right: 20px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 14px;
+    color: gray;
+    &.online {
+      color: green;
+    }
   }
 `;
 
@@ -52,9 +89,12 @@ const HeaderRight = styled.div`
   display: flex;
   flex: 0.3;
   align-items: flex-end;
-  > .MuiSvgIcon-root {
+  > .MuiButtonBase-root {
     margin-left: auto;
     margin-right: 20px;
+    > .MuiSvgIcon-root {
+      color: white;
+    }
   }
 `;
 

@@ -1,32 +1,49 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import styled from "styled-components";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useSelector } from "react-redux";
 import { selectRoomId } from "../features/appSlice";
+import Avatar from "@mui/material/Avatar";
+import AvatarGroup from "@mui/material/AvatarGroup";
 import ChatInput from "./ChatInput";
-import { useCollection, useDocument } from "react-firebase-hooks/firestore";
+import { useDocument } from "react-firebase-hooks/firestore";
 import { db } from "../firebase/config";
-import { collection, doc, query, orderBy } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import Message from "./Message";
+import useFirestore from "../hooks/useFirestore";
 
 const Chat = () => {
   const chatRef = useRef(null);
   const roomId = useSelector(selectRoomId);
   const [roomDetails] = useDocument(roomId && doc(db, "rooms", roomId));
-  const [roomMessage, loading] = useCollection(
-    roomId &&
-      query(
-        collection(db, "rooms", roomId, "messages"),
-        orderBy("timestamp", "asc")
-      )
-  );
+  const roomUsers = roomDetails?.data().members
+
+  const roomMessageCondition = useMemo(() => {
+    return {
+      fieldName: "roomId",
+      operator: "==",
+      compareValue: roomId,
+    };
+  }, [roomId]);
+
+  const usersCondition = useMemo(() => {
+    return {
+      fieldName: "uid",
+      operator: "in",
+      compareValue: roomUsers,
+    };
+  }, []);
+
+  const roomMembers = useFirestore("user", usersCondition);
+  const roomMessage = useFirestore("messages", roomMessageCondition);
+  
+  console.log(usersCondition);
 
   useEffect(() => {
     chatRef?.current?.scrollIntoView({
       behavior: "smooth",
     });
-  }, [roomId, loading]);
+  }, [roomId]);
 
   return (
     <ChatContainer>
@@ -40,22 +57,31 @@ const Chat = () => {
               <ExpandMoreIcon />
             </HeaderLeft>
             <HeaderRight>
-              <p>
-                <InfoOutlinedIcon /> Detail
-              </p>
+              <AvatarGroup max={4}>
+                {roomMembers?.map((member) => (
+                  <Avatar
+                    key={member.id}
+                    sx={{ width: "25px", height: "25px" }}
+                    alt={member.displayName}
+                    src={member.photoURL}
+                  >
+                    {member?.photoURL
+                      ? null
+                      : member?.displayName?.charAt(0)?.toUpperCase()}
+                  </Avatar>
+                ))}
+              </AvatarGroup>
             </HeaderRight>
           </Header>
           <ChatMessage>
-            {roomMessage?.docs.map((doc) => {
-              const { message, user, userImage, timestamp } = doc.data();
-
+            {roomMessage?.map((doc) => {
               return (
                 <Message
                   key={doc.id}
-                  message={message}
-                  timestamp={timestamp}
-                  user={user}
-                  userImage={userImage}
+                  message={doc.message}
+                  createdAt={doc.createdAt}
+                  user={doc.user}
+                  userImage={doc.userImage}
                 />
               );
             })}
@@ -68,7 +94,7 @@ const Chat = () => {
           />
         </>
       ) : (
-        <ChatNote>Please select channel chat </ChatNote>
+        <ChatNote>Please select or create channel chat </ChatNote>
       )}
     </ChatContainer>
   );
@@ -82,6 +108,7 @@ const ChatContainer = styled.div`
   flex-grow: 1;
   margin-top: 60px;
   overflow-y: scroll;
+  border-top: 1px solid #49274b;
 `;
 
 const Header = styled.div`
@@ -92,9 +119,10 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
-  background-color: white;
-  border-bottom: 1px solid lightgray;
+  padding: 10px 20px;
+  border-bottom: 1px solid #49274b;
+  background-color: #3f0f40;
+  z-index: 1;
 `;
 
 const HeaderLeft = styled.div`

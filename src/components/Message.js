@@ -1,14 +1,18 @@
 import React from "react";
 import styled from "styled-components";
+import { formatDate } from "../utilities/formatDate";
+import { Avatar } from "@mui/material";
 
-const Message = ({ message, timestamp, user, userImage }) => {
+const Message = ({ message, createdAt, user, userImage }) => {
   return (
     <MessageContainer>
-      <img src={userImage} alt="" />
+      <Avatar size="small" src={userImage}>
+        {userImage ? "" : user?.charAt(0)?.toUpperCase()}
+      </Avatar>
       <MessageInfo>
         <h4>
           {user}
-          <span>{new Date(timestamp?.toDate()).toUTCString()}</span>
+          <span>{formatDate(createdAt?.seconds)}</span>
         </h4>
         <p>{message}</p>
       </MessageInfo>
@@ -23,7 +27,7 @@ const MessageContainer = styled.div`
   align-items: center;
   padding: 5px;
 
-  > img {
+  > .MuiAvatar-root {
     width: 40px;
     height: 40px;
     border-radius: 8px;
@@ -40,7 +44,6 @@ const MessageInfo = styled.div`
 
   > h4 > span {
     margin-left: 10px;
-    color: gray;
     font-weight: 400;
     font-size: 10px;
   }

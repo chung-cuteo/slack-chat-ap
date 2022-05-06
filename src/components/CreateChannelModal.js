@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
@@ -10,9 +11,11 @@ import { openModal } from "../features/modalSlice";
 import { modalState } from "../features/modalSlice";
 import { useState } from "react";
 import { db } from "../firebase/config";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { AuthContext } from "../Context/AuthProvider";
 
 const CreateChannelModal = () => {
+  const { user } = useContext(AuthContext);
   const modalStates = useSelector(modalState);
   const dispatch = useDispatch();
 
@@ -34,7 +37,9 @@ const CreateChannelModal = () => {
       await addDoc(collection(db, "rooms"), {
         name: channel.name,
         desc: channel.desc,
-      })
+        members: [user.uid],
+        createdAt: serverTimestamp()
+      });
     } catch (error) {
       console.log(error);
     }

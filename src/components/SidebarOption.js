@@ -3,8 +3,9 @@ import styled from "styled-components";
 import { enterRoom } from "../features/appSlice";
 import { openModal } from "../features/modalSlice";
 
-const SidebarOption = ({ Icon, title, addChannelOption, id }) => {
+const SidebarOption = ({ Icon, title, addChannelOption, selectOption, id }) => {
   const dispatch = useDispatch();
+  
   const handleAddChannel = async () => {
     dispatch(openModal(true));
   };
@@ -19,9 +20,16 @@ const SidebarOption = ({ Icon, title, addChannelOption, id }) => {
     }
   };
 
+
   return (
     <SidebarOptionContainer
-      onClick={addChannelOption ? handleAddChannel : handleSeclectChannel }
+      onClick={
+        addChannelOption
+          ? handleAddChannel
+          : selectOption
+          ? handleSeclectChannel
+          : null
+      }
     >
       {Icon && <Icon fontSize="small" style={{ padding: 10 }} />}
       {Icon ? (
@@ -55,7 +63,7 @@ const SidebarOptionContainer = styled.a`
   }
 
   > h3 > span {
-    padding: 15px;
+    padding: 15px 10px 15px 15px;
   }
 `;
 

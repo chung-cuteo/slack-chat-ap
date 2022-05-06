@@ -1,6 +1,5 @@
-import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import { useContext, useMemo, useState } from "react";
 import styled from "styled-components";
-import CreateIcon from "@mui/icons-material/Create";
 import SidebarOption from "./SidebarOption";
 import InsertCommentIcon from "@mui/icons-material/InsertComment";
 import InboxIcon from "@mui/icons-material/Inbox";
@@ -9,45 +8,62 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import AppsIcon from "@mui/icons-material/Apps";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { db } from "../firebase/config";
-import { collection } from "firebase/firestore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { AuthContext } from "../Context/AuthProvider";
+import useFirestore from "../hooks/useFirestore";
 
 const Sidebar = () => {
-  const [channels] = useCollection(collection(db, "rooms"));
+  const { user } = useContext(AuthContext);
+  const [show, setshow] = useState(true);
+
+  const roomsCondition = useMemo(() => {
+    return {
+      fieldName: "members",
+      operator: "array-contains",
+      compareValue: user.uid,
+    };
+  }, [user.uid]);
+
+  const roomList = useFirestore("rooms", roomsCondition);
+  const handleShowRoomList = (e) => {
+    e.preventDefault();
+    setshow((pre)=>!pre);
+  };
 
   return (
     <SidebarContainer>
-      <SidebarHeader>
-        <SideBarInfo>
-          <h2>Hello chung</h2>
-          <h3>
-            <FiberManualRecordIcon />
-            dinh quang chung
-          </h3>
-        </SideBarInfo>
-        <CreateIcon />
-      </SidebarHeader>
-
       <SidebarOption Icon={InsertCommentIcon} title="Threads" />
       <SidebarOption Icon={InboxIcon} title="Mentions & reactions" />
       <SidebarOption Icon={DraftsIcon} title="Saved items" />
       <SidebarOption Icon={BookmarkBorderIcon} title="Channel Browser" />
-      <SidebarOption Icon={PeopleAltIcon} title="People & user groups" />
+      <SidebarOption Icon={PeopleAltIcon} title="People" />
       <SidebarOption Icon={AppsIcon} title="Apps" />
       <SidebarOption Icon={FileCopyIcon} title="File browser" />
-      <SidebarOption Icon={ExpandLessIcon} title="Show less" />
-      <hr />
-      <SidebarOption Icon={ExpandMoreIcon} title="Channels" />
-      <hr />
-      <SidebarOption Icon={AddIcon} addChannelOption title="Add channel" />
 
-      {channels?.docs.map((doc) => (
-        <SidebarOption key={doc.id} id={doc.id} title={doc.data().name} />
-      ))}
+      <ChannelTitle onClick={handleShowRoomList}>
+        {show ? (
+          <ExpandMoreIcon fontSize="small" style={{ padding: 10 }} />
+        ) : (
+          <ExpandLessIcon fontSize="small" style={{ padding: 10 }} />
+        )}
+        <h3>Channels</h3>
+      </ChannelTitle>
+
+      {show && (
+        <>
+          {roomList?.map((room) => (
+            <SidebarOption
+              key={room.id}
+              id={room.id}
+              title={room.name}
+              selectOption
+            />
+          ))}
+        </>
+      )}
+      <SidebarOption Icon={AddIcon} addChannelOption title="Add channel" />
     </SidebarContainer>
   );
 };
@@ -55,55 +71,33 @@ const Sidebar = () => {
 export default Sidebar;
 
 const SidebarContainer = styled.div`
-  color: white;
   background-color: var(--slack-color);
   flex: 0.3;
   margin-top: 60px;
   max-width: 260px;
   max-height: 100%;
+  padding: 5px 0;
   overflow: auto;
   border-top: 1px solid #49274b;
-
-  > hr {
-    margin: 10px 0;
-    border: 1px solid #49274b;
-  }
+  border-right: 1px solid #49274b;
 `;
 
-const SidebarHeader = styled.div`
+const ChannelTitle = styled.div`
   display: flex;
   align-items: center;
-  padding: 13px;
+  font-size: 12px;
+  padding: 5px 0;
+  cursor: pointer;
+  border-top: 1px solid #49274b;
   border-bottom: 1px solid #49274b;
+  transition: all 0.5s ease-in-out;
 
-  > .MuiSvgIcon-root {
-    padding: 8px;
-    color: #49274b;
-    font-size: 18px;
-    background-color: white;
-    border-radius: 100%;
-  }
-`;
-
-const SideBarInfo = styled.div`
-  flex: 1;
-
-  > h2 {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 5px;
+  :hover {
+    opacity: 0.8;
+    background-color: #340e36;
   }
 
   > h3 {
-    display: flex;
-    align-items: center;
-    font-size: 13px;
-    font-weight: 400;
-  }
-
-  > h3 > .MuiSvgIcon-root {
-    font-size: 14px;
-    margin: 1px 2px 0 0;
-    color: green;
+    font-weight: 500;
   }
 `;
