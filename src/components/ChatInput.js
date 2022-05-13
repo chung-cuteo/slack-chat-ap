@@ -68,7 +68,7 @@ const ChatInputContainer = styled.div`
     bottom: 30px;
     width: 73%;
     margin: 0 auto;
-    border-radius: 3px;
+    border-radius: 10px;
     padding: 20px;
     outline: none;
 

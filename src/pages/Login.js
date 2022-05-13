@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import { auth, providerGoogle } from "../firebase/config";
 import { signInWithPopup } from "firebase/auth";
 import { generateKeywords } from "../utilities/generateKeywords";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { getAdditionalUserInfo } from "firebase/auth";
 
@@ -22,6 +22,7 @@ const Login = () => {
           photoURL: user.photoURL,
           uid: user.uid,
           providerId: result.providerId,
+          createdAt: serverTimestamp(),
           keywords: generateKeywords(user.displayName?.toLowerCase()),
         });
       }

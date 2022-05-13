@@ -1,7 +1,7 @@
 import { useEffect, useRef, useMemo } from "react";
 import styled from "styled-components";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { selectRoomId } from "../features/appSlice";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
@@ -11,12 +11,15 @@ import { db } from "../firebase/config";
 import { doc } from "firebase/firestore";
 import Message from "./Message";
 import useFirestore from "../hooks/useFirestore";
+import ChannelSettingModal from "./ChannelSettingModal";
+import { openModal } from "../features/modalSlice";
+
 
 const Chat = () => {
+  const dispatch = useDispatch()
   const chatRef = useRef(null);
   const roomId = useSelector(selectRoomId);
   const [roomDetails] = useDocument(roomId && doc(db, "rooms", roomId));
-  const roomUsers = roomDetails?.data().members
 
   const roomMessageCondition = useMemo(() => {
     return {
@@ -30,14 +33,17 @@ const Chat = () => {
     return {
       fieldName: "uid",
       operator: "in",
-      compareValue: roomUsers,
+      compareValue: roomDetails?.data().members,
     };
-  }, []);
+  }, [roomDetails]);
 
-  const roomMembers = useFirestore("user", usersCondition);
+  const handleOpenModalMembers = async () => {
+    dispatch(openModal(true));
+  };
+
+
   const roomMessage = useFirestore("messages", roomMessageCondition);
-  
-  console.log(usersCondition);
+  const roomMembers = useFirestore("user", usersCondition);
 
   useEffect(() => {
     chatRef?.current?.scrollIntoView({
@@ -56,7 +62,13 @@ const Chat = () => {
               </h4>
               <ExpandMoreIcon />
             </HeaderLeft>
-            <HeaderRight>
+            <HeaderRight onClick={handleOpenModalMembers}>
+              <div className="popup">
+                <Avatarpopup>
+                  <h4>View all members of this channel</h4>
+                  <p>{roomMembers?.map((member) => (roomMembers.length > 1) ? member.displayName + '': member.displayName)}</p>
+                </Avatarpopup>
+              </div>
               <AvatarGroup max={4}>
                 {roomMembers?.map((member) => (
                   <Avatar
@@ -96,6 +108,7 @@ const Chat = () => {
       ) : (
         <ChatNote>Please select or create channel chat </ChatNote>
       )}
+      <ChannelSettingModal roomDetails={roomDetails}/>
     </ChatContainer>
   );
 };
@@ -141,6 +154,8 @@ const HeaderLeft = styled.div`
 `;
 
 const HeaderRight = styled.div`
+  cursor: pointer;
+  position: relative;
   > p {
     display: flex;
     align-items: center;
@@ -150,6 +165,16 @@ const HeaderRight = styled.div`
   > p > .MuiSvgIcon-root {
     margin-right: 5px !important;
     font-size: 16px;
+  }
+
+  > .popup {
+    display: none;
+  }
+
+  &:hover {
+    > .popup {
+      display: block;
+    }
   }
 `;
 
@@ -168,4 +193,35 @@ const ChatNote = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+`;
+
+const Avatarpopup = styled.div`
+  position: absolute;
+  right: -4px;
+  top: 130%;
+  width: 150px;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: white;
+  border-radius: 5px;
+  border: 1px solid #49274b;
+  background-color: black;
+
+  ::before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    right:10px;
+    z-index: 2;
+    width: 10px;
+    height: 10px;
+    background-color: black;
+    transform: rotate(45deg);
+  }
+  p {
+    font-size: 13px;
+    font-weight: 300;
+    margin-top: 10px;
+  }
 `;
