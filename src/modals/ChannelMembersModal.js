@@ -16,7 +16,7 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import DialogActions from "@mui/material/DialogActions";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -47,8 +47,6 @@ const ChannelMembersModal = ({ roomMembers, roomId, roomDetails }) => {
     ?.filter(
       (member) => !roomMembers?.map((val) => val.uid).includes(member?.uid)
     );
-
-  console.log(memberNotInChannel);
 
   const handleClose = () => {
     dispatch(openMemberModal(false));
