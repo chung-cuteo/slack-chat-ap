@@ -7,7 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useDispatch, useSelector } from "react-redux";
-import { openModal } from "../features/modalSlice";
+import { openChannelModal } from "../features/modalSlice";
 import { modalState } from "../features/modalSlice";
 import { useState } from "react";
 import { db } from "../firebase/config";
@@ -25,7 +25,7 @@ const CreateChannelModal = () => {
   });
 
   const handleClose = () => {
-    dispatch(openModal(false));
+    dispatch(openChannelModal(false));
   };
 
   const handleChange = (e) => {
@@ -47,12 +47,12 @@ const CreateChannelModal = () => {
       name: "",
       desc: "",
     });
-    dispatch(openModal(false));
+    dispatch(openChannelModal(false));
   };
 
   return (
     <div>
-      <Dialog open={modalStates.openModal} onClose={handleClose}>
+      <Dialog open={modalStates.isShowChannelModal} onClose={handleClose}>
         <DialogTitle>Create a channel</DialogTitle>
         <DialogContent>
           <DialogContentText>

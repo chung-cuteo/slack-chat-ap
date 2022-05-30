@@ -6,7 +6,6 @@ import {
   getAuth,
   connectAuthEmulator,
   GoogleAuthProvider,
-  FacebookAuthProvider,
 } from "firebase/auth";
 
 const firebaseConfig = {

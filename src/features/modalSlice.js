@@ -5,7 +5,8 @@ const initialState = {
     name: '',
     desc: ''
   },
-  openModal: false
+  isShowChannelModal: false,
+  isShowMemberModal: false
 };
 
 export const modalSlice = createSlice({
@@ -16,13 +17,16 @@ export const modalSlice = createSlice({
       state.channel.name = action.payload.channel.name
       state.channel.desc = action.payload.channel.desc
     },
-    openModal: (state, action )=>{
-      state.openModal = action.payload
+    openChannelModal: (state, action )=>{
+      state.isShowChannelModal = action.payload
+    },
+    openMemberModal: (state, action )=>{
+      state.isShowMemberModal = action.payload
     }
   },
 })
 
-export const { addChannel, openModal } = modalSlice.actions;
+export const { addChannel, openChannelModal, openMemberModal } = modalSlice.actions;
 
 export const modalState = state => state.modal
 

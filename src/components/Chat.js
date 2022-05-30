@@ -11,12 +11,11 @@ import { db } from "../firebase/config";
 import { doc } from "firebase/firestore";
 import Message from "./Message";
 import useFirestore from "../hooks/useFirestore";
-import ChannelSettingModal from "./ChannelSettingModal";
-import { openModal } from "../features/modalSlice";
-
+import ChannelMembersModal from "../modals/ChannelMembersModal";
+import { openMemberModal } from "../features/modalSlice";
 
 const Chat = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const chatRef = useRef(null);
   const roomId = useSelector(selectRoomId);
   const [roomDetails] = useDocument(roomId && doc(db, "rooms", roomId));
@@ -38,9 +37,8 @@ const Chat = () => {
   }, [roomDetails]);
 
   const handleOpenModalMembers = async () => {
-    dispatch(openModal(true));
+    dispatch(openMemberModal(true));
   };
-
 
   const roomMessage = useFirestore("messages", roomMessageCondition);
   const roomMembers = useFirestore("user", usersCondition);
@@ -66,7 +64,13 @@ const Chat = () => {
               <div className="popup">
                 <Avatarpopup>
                   <h4>View all members of this channel</h4>
-                  <p>{roomMembers?.map((member) => (roomMembers.length > 1) ? member.displayName + '': member.displayName)}</p>
+                  <p>
+                    {roomMembers?.map((member) =>
+                      roomMembers.length > 1
+                        ? member.displayName + ""
+                        : member.displayName
+                    )}
+                  </p>
                 </Avatarpopup>
               </div>
               <AvatarGroup max={4}>
@@ -108,7 +112,11 @@ const Chat = () => {
       ) : (
         <ChatNote>Please select or create channel chat </ChatNote>
       )}
-      <ChannelSettingModal roomDetails={roomDetails}/>
+      <ChannelMembersModal
+        roomMembers={roomMembers}
+        roomId={roomId}
+        roomDetails={roomDetails}
+      />
     </ChatContainer>
   );
 };
@@ -212,7 +220,7 @@ const Avatarpopup = styled.div`
     content: "";
     position: absolute;
     top: -4px;
-    right:10px;
+    right: 10px;
     z-index: 2;
     width: 10px;
     height: 10px;

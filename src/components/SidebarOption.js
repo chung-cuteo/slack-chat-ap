@@ -1,13 +1,13 @@
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { enterRoom } from "../features/appSlice";
-import { openModal } from "../features/modalSlice";
+import { openChannelModal } from "../features/modalSlice";
 
 const SidebarOption = ({ Icon, title, addChannelOption, selectOption, id }) => {
   const dispatch = useDispatch();
   
   const handleAddChannel = async () => {
-    dispatch(openModal(true));
+    dispatch(openChannelModal(true));
   };
 
   const handleSeclectChannel = () => {

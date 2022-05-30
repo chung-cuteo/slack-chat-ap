@@ -1,7 +1,7 @@
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Chat from "../components/Chat";
-import CreateChannelModal from "../components/CreateChannelModal";
+import CreateChannelModal from "../modals/CreateChannelModal";
 import styled from "styled-components";
 
 
